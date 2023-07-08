@@ -1,50 +1,51 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { nanoid } from 'nanoid';
-import Notiflix from 'notiflix';
-import initContacts from '../contacts.json';
+import { addContact, deleteContact, fetchContacts } from './operation';
+
+
+const handlePending = state => {
+    state.isLoading = true;
+};
+
+const handleRejected = (state, action) => {
+    state.isLoading = false;
+    state.error = action.payload;
+};
 
 export const contactsSlice = createSlice({
-    name: 'contacts',
-    initialState: {
-    contacts: initContacts,
-    },
-    reducers: {
-    addContact: {
-        reducer(state, action) {
-        if (
-            state.contacts.find(
-            existingContact => existingContact.name === action.payload.name
-            )
-        ) {
-            Notiflix.Notify.failure(
-            `${action.payload.name} is already in your contacts`
-            );
-        } else {
-            state.contacts.unshift(action.payload);
+name: 'contacts',
+initialState: {
+    items: [],
+    isLoading: false,
+    error: null,
+},
+extraReducers:  {
+    [fetchContacts.pending]: handlePending,
+    [addContact.pending]: handlePending,
+    [deleteContact.pending]: handlePending,
 
-            Notiflix.Notify.success(
-            `${action.payload.name} has been successfully added to  your phonebook`
-            );
-        }
-        },
-        prepare(name, number) {
-        return {
-            payload: {
-            name,
-            number,
-            id: nanoid(),
-            },
-        };
-        },
+    [fetchContacts.rejected]: handleRejected,
+    [addContact.rejected]: handleRejected,
+    [deleteContact.rejected]: handleRejected,
+
+    [fetchContacts.fulfilled](state, action) {
+        state.isLoading = false;
+        state.error = null;
+        state.items = action.payload;
+    },
+    [addContact.fulfilled](state, action) {
+        state.items.push(action.payload);
+        state.isLoading = false;
+        state.error = null;
     },
 
-    deleteContact(state, action) {
-        state.contacts = state.contacts.filter(
-        contact => contact.id !== action.payload
-        );
+    [deleteContact.fulfilled](state, action) {
+        state.isLoading = false;
+        state.error = null;
+        state.items = state.items.filter(
+        contact => contact.id !== action.payload.id
+    );
     },
-    },
+},
 });
 
-export const { addContact, deleteContact } = contactsSlice.actions;
 export default contactsSlice.reducer;
