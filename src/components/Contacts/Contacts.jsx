@@ -1,37 +1,40 @@
 import React from 'react';
 import { ContactsList, ListItem, DeleteBtn, Title } from './Contacts.styled';
-import { useSelector, useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+
 import { deleteContact } from 'redux/operation';
 import { selectContacts, selectFilter } from 'redux/selectors';
 
 const Contacts = () => {
     const dispatch = useDispatch();
-    let contacts = useSelector(selectContacts);
+    const contacts = useSelector(selectContacts);
     const filter = useSelector(selectFilter);
 
-    const visibleContacts = contacts.filter(contact =>
-        contact.name.toLowerCase().includes(filter.toLowerCase())
-);
+    const visibleContacts = contacts.filter((contact) =>
+    contact.name.toLowerCase().includes(filter.toLowerCase())
+    );
 
+    const handleDelete = (contactId) => {
+    dispatch(deleteContact(contactId));
+    };
 
-return (
+    return (
     <>
-    <Title>Contacts</Title>
-    <ContactsList>
-        {visibleContacts.map(contact => (
-        <ListItem key={contact.id}>
+        <Title>Contacts</Title>
+        <ContactsList>
+        {visibleContacts.map((contact) => (
+            <ListItem key={contact.id}>
             <p>
-            {contact.name}: {contact.phone}
+                {contact.name}: {contact.phone}
             </p>
-            <DeleteBtn onClick={() => dispatch(deleteContact(contact.id))} type="button">
-            Delete
+            <DeleteBtn onClick={() => handleDelete(contact.id)} type="button">
+                Delete
             </DeleteBtn>
-        </ListItem>
+            </ListItem>
         ))}
-    </ContactsList>
+        </ContactsList>
     </>
-);
+    );
 };
-
 
 export default Contacts;
