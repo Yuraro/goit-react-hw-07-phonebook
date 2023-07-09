@@ -1,16 +1,18 @@
 import ContactForm from './ContactForm/ContactForm';
 import Contacts from './Contacts/Contacts';
+import React from 'react';
 import Filter from './Filter/Filter';
 import { WrapperContent } from './App.styled';
 import { useDispatch, useSelector } from 'react-redux';
-import { selectContacts, selectError } from 'redux/selectors';
+import { selectContacts, selectError, selectIsLoading } from 'redux/selectors';
 import { useEffect } from 'react';
 import { fetchContacts } from 'redux/operation';
+import Loader from './Loader/Loader';
 
 export const App = () => {
-
   const contacts = useSelector(selectContacts)
   const error = useSelector(selectError)
+  const isLoading = useSelector(selectIsLoading)
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -18,17 +20,18 @@ export const App = () => {
   }, [dispatch]);
 
   return (
-    <WrapperContent>
+        <WrapperContent>
       <ContactForm />
       {contacts.length > 0 ? (
-        <div>
+        <>
           <Contacts />
           <Filter />
-        </div>
+        </>
       ) : (
         <p>The contact list is empty</p>
       )}
-      { !error}
-    </WrapperContent>
+      {isLoading && !error && <Loader/>}
+      </WrapperContent>
+
   );
 };

@@ -1,3 +1,4 @@
+import React from 'react';
 import { ContactsList, ListItem, DeleteBtn, Title } from './Contacts.styled';
 import { useSelector, useDispatch } from 'react-redux';
 import { deleteContact } from 'redux/operation';
@@ -5,12 +6,13 @@ import { selectContacts, selectFilter } from 'redux/selectors';
 
 const Contacts = () => {
     const dispatch = useDispatch();
-    const contacts = useSelector(selectContacts);
+    let contacts = useSelector(selectContacts);
     const filter = useSelector(selectFilter);
-    
+
     const visibleContacts = contacts.filter(contact =>
-    contact.name.toLowerCase().includes(filter.toLowerCase())
-    );
+        contact.name.toLowerCase().includes(filter.toLowerCase())
+);
+
 
 return (
     <>
